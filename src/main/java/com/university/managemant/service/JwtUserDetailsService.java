@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 	
+	private String userType;
 	
 	@Autowired
 	private TeacherService teacherService;
@@ -26,6 +28,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private StudentService studentService;
@@ -61,9 +66,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	public boolean checkAdminExist(String email) {
-		
 		User user = userRepository.findByEmail(email);
-		
 		if(user==null) {
 			return false;
 		}else {
@@ -71,5 +74,42 @@ public class JwtUserDetailsService implements UserDetailsService {
 		}
 		
 	}
+	
+	
+	public boolean checkLoginCredential(String email, String password) {
+		
+		try {
+			User user = userRepository.findByEmail(email);
+			userType = user.getUserType();
+			
+			if(passwordEncoder.matches(password, user.getPassword()) && user.isActive()) {
+				return true;
+			}else {
+				return false;
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public String getUserType() {
+		return userType;	
+	}
+	
+
+	
+	public boolean deactiveAccount(String email) {
+		User user = userRepository.findByEmail(email);
+		if(user!=null) {
+			user.setActive(false);
+			userRepository.saveAndFlush(user);
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+
 	
 }
