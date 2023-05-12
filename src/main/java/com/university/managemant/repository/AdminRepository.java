@@ -8,4 +8,6 @@ import com.university.managemant.model.Admin;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin, Long>{
 
+	Admin findByEmail(String email);
+
 }

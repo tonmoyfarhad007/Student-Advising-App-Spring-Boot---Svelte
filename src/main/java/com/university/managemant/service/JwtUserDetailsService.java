@@ -40,8 +40,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 				new ArrayList<>());
 	}
 
-	public User save(UserDto user) {
-		System.out.println("------------------->"+user.getEmail()+" "+user.getUserType());
+	public User createUserAccount(UserDto user) {
+		System.out.println("------------------->"+user.getEmail()+" "+user.getUserType()+"!!! "+user.getPassword());
 		User newUser = new User();
 		newUser.setEmail(user.getEmail());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
@@ -51,11 +51,23 @@ public class JwtUserDetailsService implements UserDetailsService {
 		return userRepository.save(newUser);
 	}
 	
-	public void setAccount(UserDto user) {
+	public void setProfile(UserDto user) {
 		if(user.getUserType().equalsIgnoreCase("Teacher")) {
 			teacherService.saveSingleTeacherInfo(null, user.getEmail(), null, null, true);
 		}else if(user.getUserType().equalsIgnoreCase("Student")) {
 			studentService.saveSingleStudentInfo(null, user.getEmail(), null, null, true);
+		}
+		
+	}
+	
+	public boolean checkAdminExist(String email) {
+		
+		User user = userRepository.findByEmail(email);
+		
+		if(user==null) {
+			return false;
+		}else {
+			return true;
 		}
 		
 	}

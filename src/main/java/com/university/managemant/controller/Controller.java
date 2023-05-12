@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.university.managemant.model.Teacher;
 import com.university.managemant.requestRespondseHandler.JwtRequest;
+import com.university.managemant.service.AdminService;
 import com.university.managemant.service.StudentService;
 import com.university.managemant.service.TeacherService;
 import com.university.managemant.service.UserService;
@@ -24,6 +25,9 @@ public class Controller {
 	@Autowired
 	private StudentService studentService;
 	
+	@Autowired
+	private AdminService adminService;
+	
 	@GetMapping("/welcome")
 	public String welCome() {
 		return "welcome to 24 codding challenge";
@@ -38,11 +42,15 @@ public class Controller {
 		if(check) {
 			if(userType.equalsIgnoreCase("Teacher")) {
 				return ResponseEntity.ok(teacherService.getOneTeachersInfo(email));
-			}else {
+			}else if(userType.equalsIgnoreCase("Student")){
 				return ResponseEntity.ok(studentService.getOneStudentsInfo(email));
+			}else if(userType.equalsIgnoreCase("Admin")){
+				return ResponseEntity.ok(adminService.getAdminsInfo(email));
+			}else {
+				return ResponseEntity.ok("this user type dont exist yet!!");
 			}
 		}else {
-			return ResponseEntity.ok("Wrong pass");
+			return ResponseEntity.ok("Not authorised");
 		}
 		
 		

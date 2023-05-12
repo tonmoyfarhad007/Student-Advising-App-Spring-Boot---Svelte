@@ -25,7 +25,7 @@ public class UserService {
 			User user = userRepository.findByEmail(email);
 			userType = user.getUserType();
 			
-			if(passwordEncoder.matches(password, user.getPassword())) {
+			if(passwordEncoder.matches(password, user.getPassword()) && user.isActive()) {
 				return true;
 			}else {
 				return false;

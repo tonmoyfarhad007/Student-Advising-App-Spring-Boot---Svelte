@@ -40,8 +40,13 @@ public class JwtAuthenticationController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
-		userDetailsService.setAccount(user);
-		return ResponseEntity.ok(userDetailsService.save(user));
+		if(!user.getUserType().equalsIgnoreCase("Admin")) {
+			userDetailsService.setProfile(user);
+			return ResponseEntity.ok(userDetailsService.createUserAccount(user));
+		}else {
+			return ResponseEntity.ok("Admin cannot be register");
+		}
+		
 	}
 
 	private void authenticate(String email, String password) throws Exception {
