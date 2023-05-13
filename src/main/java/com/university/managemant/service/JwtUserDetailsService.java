@@ -15,6 +15,8 @@ import com.university.managemant.requestRespondseHandler.UserDto;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpSession;
+
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 	
@@ -34,6 +36,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	@Autowired
 	private StudentService studentService;
+	
+	@Autowired
+	private HttpSession httpSession;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -83,6 +88,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 			userType = user.getUserType();
 			
 			if(passwordEncoder.matches(password, user.getPassword()) && user.isActive()) {
+				httpSession.setAttribute("email", email);
 				return true;
 			}else {
 				return false;
@@ -95,6 +101,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	public String getUserType() {
 		return userType;	
+	}
+	
+	
+	public String getUserEmailFromSession() {
+		return (String) httpSession.getAttribute("email");
 	}
 	
 
@@ -110,6 +121,19 @@ public class JwtUserDetailsService implements UserDetailsService {
 		}
 		
 	}
+	
+	public boolean activateAccount(String email) {
+		User user = userRepository.findByEmail(email);
+		if(user!=null) {
+			user.setActive(true);
+			userRepository.saveAndFlush(user);
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+
 
 	
 }

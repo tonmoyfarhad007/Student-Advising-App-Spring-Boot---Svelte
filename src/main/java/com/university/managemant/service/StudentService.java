@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.university.managemant.model.Student;
+import com.university.managemant.model.Teacher;
 import com.university.managemant.repository.StudentRepository;
 
 @Service
@@ -29,6 +30,13 @@ public class StudentService {
 		student.setPhoneNo(phone);
 		student.setDepartmentName(deptName);
 		student.setActive(isActive);
+		
+		studentRepository.save(student);
+	}
+	
+	public void updateStudentInfo(String studentEmail, Teacher teacher) {
+		Student student = studentRepository.findByEmail(studentEmail);
+		student.setTeacher(teacher);
 		
 		studentRepository.save(student);
 	}
