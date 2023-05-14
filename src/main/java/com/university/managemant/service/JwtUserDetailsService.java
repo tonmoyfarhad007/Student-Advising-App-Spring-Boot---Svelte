@@ -63,9 +63,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	public void setProfile(UserDto user) {
 		if(user.getUserType().equalsIgnoreCase("Teacher")) {
-			teacherService.saveSingleTeacherInfo(null, user.getEmail(), null, null, true);
+			teacherService.saveSingleTeacherInfo(user.getName(), user.getEmail(), user.getPhoneNo(), user.getDepartmentName(), true);
 		}else if(user.getUserType().equalsIgnoreCase("Student")) {
-			studentService.saveSingleStudentInfo(null, user.getEmail(), null, null, true);
+			studentService.saveSingleStudentInfo(user.getName(), user.getEmail(), user.getPhoneNo(), user.getDepartmentName(), true);
 		}
 		
 	}

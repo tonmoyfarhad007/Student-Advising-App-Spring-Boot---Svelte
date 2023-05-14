@@ -1,5 +1,9 @@
 package com.university.managemant.controller;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -9,13 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.university.managemant.config.JwtTokenUtil;
+import com.university.managemant.model.User;
 import com.university.managemant.requestRespondseHandler.JwtRequest;
 import com.university.managemant.requestRespondseHandler.JwtResponse;
 import com.university.managemant.requestRespondseHandler.UserDto;
 import com.university.managemant.service.JwtUserDetailsService;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5000")
 public class JwtAuthenticationController {
 
 	@Autowired
@@ -40,11 +45,28 @@ public class JwtAuthenticationController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		
 		if(!user.getUserType().equalsIgnoreCase("Admin")) {
 			userDetailsService.setProfile(user);
-			return ResponseEntity.ok(userDetailsService.createUserAccount(user));
+			User newUser = userDetailsService.createUserAccount(user);
+			if(newUser!=null) {
+				response.put("success", true);
+				response.put("status", HttpStatus.OK.value());
+				response.put("msg", "you have done it");
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			}else {
+				response.put("success", false);
+				response.put("status", HttpStatus.BAD_REQUEST.value());
+				response.put("msg", "sorry, try again!");
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+			}
+			
 		}else {
-			return ResponseEntity.ok("Admin cannot be register");
+			response.put("success", false);
+			response.put("status", HttpStatus.BAD_REQUEST.value());
+			response.put("msg", "Admin cannot be register");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}
 		
 	}

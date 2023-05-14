@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import com.university.managemant.service.TeacherService;
 import com.university.managemant.service.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5000")
 public class Controller {
 	
 	@Autowired
@@ -48,7 +50,7 @@ public class Controller {
 		return "welcome to 24 codding challenge";
 	}
 	
-	@GetMapping("/login")
+	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) {
 		String email = authenticationRequest.getEmail();
 		String password = authenticationRequest.getPassword();
