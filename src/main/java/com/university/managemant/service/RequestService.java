@@ -28,5 +28,11 @@ public class RequestService {
 		return requestRepository.saveAndFlush(request);
 	}
 	
+	public Request cancelRequest(String studentEmail) {
+		Request request = requestRepository.findByStudentEmail(studentEmail);
+		request.setStatus("canceled");
+		return requestRepository.saveAndFlush(request);
+	}
+	
 
 }

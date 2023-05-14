@@ -40,5 +40,17 @@ public class StudentService {
 		
 		studentRepository.save(student);
 	}
+	
+	public List<Student> getTeacherWiseStudentList(Teacher teacher){
+		List<Student> studentList = studentRepository.findByTeacher(teacher);
+		return studentList;
+		
+	}
+	
+	public void removeAdvisor(String email) {
+		Student student = studentRepository.findByEmail(email);
+		student.setTeacher(null);
+		studentRepository.save(student);
+	}
 
 }

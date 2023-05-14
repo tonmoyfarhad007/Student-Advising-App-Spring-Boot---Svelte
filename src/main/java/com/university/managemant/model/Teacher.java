@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "teacher")
 public class Teacher {
@@ -31,6 +33,7 @@ public class Teacher {
 	
 	private boolean isActive;
 	
+	@JsonIgnore 
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "teacher")
 	private List<Student> students;
 	

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,7 +56,7 @@ public class Controller {
 		String userType = userService.getUserType();
 		if(check) {
 			if(userType.equalsIgnoreCase("Teacher")) {
-				return ResponseEntity.ok(teacherService.getOneTeachersInfo(email));
+				return ResponseEntity.ok(teacherService.getSingleTeachersInfo(email));
 			}else if(userType.equalsIgnoreCase("Student")){
 				return ResponseEntity.ok(studentService.getOneStudentsInfo(email));
 			}else if(userType.equalsIgnoreCase("Admin")){
@@ -117,6 +118,52 @@ public class Controller {
 		Teacher teacher = teacherService.addApprovedStudentInfoToTeacher(request.getTeacherEmail(), student);
 		
 		return ResponseEntity.ok(teacher);
+	}
+	
+	@GetMapping("/getAllTeachers")
+	public ResponseEntity<?> findAllteachers(){
+//		System.out.println(userService.getUserEmailFromSession());
+		if(userService.getUserEmailFromSession().equals("admin@gmail.com")) {
+			return ResponseEntity.ok(teacherService.getAllTeachersInfo());
+		}else {
+			return ResponseEntity.ok("you are not authorised to get those information");
+		} 
+		
+		
+		
+	}
+	
+	@GetMapping("/getAllStudents")
+	public ResponseEntity<?> findAllStudents(){
+		if(userService.getUserEmailFromSession().equals("admin@gmail.com")) {
+			return ResponseEntity.ok(studentService.getAllStudentsInfo());
+		}else {
+			return ResponseEntity.ok("you are not authorised to get those information");
+		} 	
+		
+	}
+	
+	@GetMapping("/getTeacherWiseAllStudents")
+	public ResponseEntity<?> findTeacherWiseAllStudents(@RequestParam("teacherEmail") String teacherEmail){
+		String loggedInUserEmail = userService.getUserEmailFromSession();
+		if(loggedInUserEmail.equals(teacherEmail)) {
+			return ResponseEntity.ok(teacherService.getTeacherWiseStudentList(teacherEmail));
+		}else {
+			return ResponseEntity.ok("you cannot get others student list");
+		}
+	}
+	
+	@PatchMapping("/removeStudentFromTeacher")
+	public ResponseEntity<?> deleteStudentFromTeacher(@RequestParam("studentEmail") String studentEmail,
+			@RequestParam("teacherEmail") String teacherEmail){
+		String loggedInUserEmail = userService.getUserEmailFromSession();
+		if(loggedInUserEmail.equals(teacherEmail)) {
+			studentService.removeAdvisor(studentEmail);
+			requestService.cancelRequest(studentEmail);
+			return ResponseEntity.ok(teacherService.getSingleTeachersInfo(teacherEmail));
+		}else {
+			return ResponseEntity.ok("you cannot delete other theacher's student");
+		}
 	}
 	
 	

@@ -26,7 +26,7 @@ public class TeacherService {
 		return teacherRepository.findAll();
 	}
 	
-	public Teacher getOneTeachersInfo(String email) {
+	public Teacher getSingleTeachersInfo(String email) {
 		return teacherRepository.findByEmail(email);
 	}
 	
@@ -49,6 +49,12 @@ public class TeacherService {
 		studentService.updateStudentInfo(student.getEmail(), teacher);
 		
 		return teacherRepository.save(teacher);
+	}
+	
+	public List<Student> getTeacherWiseStudentList(String email){
+		
+		Teacher teacher = teacherRepository.findByEmail(email);
+		return studentService.getTeacherWiseStudentList(teacher);
 	}
 
 }
