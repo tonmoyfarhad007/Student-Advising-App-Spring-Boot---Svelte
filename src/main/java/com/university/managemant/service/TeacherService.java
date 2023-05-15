@@ -56,5 +56,10 @@ public class TeacherService {
 		Teacher teacher = teacherRepository.findByEmail(email);
 		return studentService.getTeacherWiseStudentList(teacher);
 	}
+	public void deactiveTeacher(String email) {
+		Teacher teacher =teacherRepository.findByEmail(email);
+		teacher.setActive(false);
+		teacherRepository.save(teacher);
+	}
 
 }

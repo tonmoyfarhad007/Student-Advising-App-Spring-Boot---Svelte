@@ -1,5 +1,7 @@
 <script>
 
+    import {adminData, isLoggedIn, loggedInUserPass, loggedInUser} from '../store/adminStore.js';
+    import { studentProfileData } from '../store/studentStore.js';
 
     async function onSubmit(e) {
         const formData = new FormData(e.target);
@@ -8,11 +10,11 @@
         for (const [key, value] of formData) {
             plainObject[key] = value;
         }
+        loggedInUser.set(plainObject["email"]);
+        loggedInUserPass.set(plainObject["password"]);
 
         const jsonData = JSON.stringify(plainObject);
-        console.log(jsonData);
-
-
+        
         let jwtResponse = await fetch('http://localhost:8080/authenticate', {
             method: 'POST',
             headers: {
@@ -24,21 +26,28 @@
         const jwtTokenData = await jwtResponse.json();
         jwtToken = jwtTokenData['token'];
 
-        console.log("jwtToken------>",jwtToken);
-        let bearer = "Bearer "+jwtToken;
-
-
         let response = await fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            'Content-Type': 'application/json',
-        },
-        body: jsonData
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwtToken}`,
+            },
+            body: jsonData
         });
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
+        isLoggedIn.set(true);
+        if(data['userType']=="Admin") {
+            adminData.store(data['userDetails']);
+            window.location.href = "#/admin";
+        }else if(data['userType']=="Student"){
+            studentProfileData.setStudentData(data['userDetails']);
+            window.location.href = "#/student";
+        }
+        else{
+            alert("Somthing wrong with registration please try again");
+        }
 
         
     }

@@ -20,7 +20,7 @@ import com.university.managemant.requestRespondseHandler.UserDto;
 import com.university.managemant.service.JwtUserDetailsService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5000")
+@CrossOrigin
 public class JwtAuthenticationController {
 
 	@Autowired

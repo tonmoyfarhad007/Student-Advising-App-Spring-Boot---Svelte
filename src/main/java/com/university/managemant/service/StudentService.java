@@ -53,4 +53,10 @@ public class StudentService {
 		studentRepository.save(student);
 	}
 
+	public void deactiveTeacher(String email) {
+		Student student = studentRepository.findByEmail(email);
+		student.setActive(false);
+		
+	}
+
 }

@@ -3,6 +3,8 @@ package com.university.managemant.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ import com.university.managemant.service.TeacherService;
 import com.university.managemant.service.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5000")
+@CrossOrigin
 public class Controller {
 	
 	@Autowired
@@ -45,36 +47,49 @@ public class Controller {
 	@Autowired
 	private RequestService requestService;
 	
+	@Autowired
+	private HttpSession httpSession;
+
+	
 	@GetMapping("/welcome")
 	public String welCome() {
 		return "welcome to 24 codding challenge";
 	}
 	
+	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) {
 		String email = authenticationRequest.getEmail();
 		String password = authenticationRequest.getPassword();
-		boolean check = userService.checkLoginCredential(email, password);
+		boolean check = userService.checkLoginCredential(email, password,httpSession);
 		String userType = userService.getUserType();
+		Map<String, Object> response = new HashMap<>();
+		response.put("userType", userType);
+		
 		if(check) {
 			if(userType.equalsIgnoreCase("Teacher")) {
-				return ResponseEntity.ok(teacherService.getSingleTeachersInfo(email));
+				response.put("userDetails", teacherService.getSingleTeachersInfo(email));
+				return ResponseEntity.ok(response);
 			}else if(userType.equalsIgnoreCase("Student")){
-				return ResponseEntity.ok(studentService.getOneStudentsInfo(email));
+				response.put("userDetails", studentService.getOneStudentsInfo(email));
+				return ResponseEntity.ok(response);
 			}else if(userType.equalsIgnoreCase("Admin")){
-				return ResponseEntity.ok(adminService.getAdminsInfo(email));
+				response.put("userDetails", adminService.getAdminsInfo(email));
+				return ResponseEntity.ok(response);
 			}else {
-				return ResponseEntity.ok("this user type dont exist yet!!");
+				response.put("userDetails", "this user type dont exist yet!!");
+				return ResponseEntity.ok(response);
 			}
 		}else {
-			return ResponseEntity.ok("Not authorised");
+			response.put("userDetails", "Not authorised");
+			return ResponseEntity.ok(response);
 		}	
 	}
 	
 	@PostMapping("/deactiveAccount")
 	public ResponseEntity<Map<String, Object>> deactiveUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-		String loggedInUserEmail = userService.getUserEmailFromSession();
+		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
         if(email.equals("admin@gmail.com")) {
         	response.put("message", "admin cannot be deactivated");
         	response.put("status", HttpStatus.FORBIDDEN.value());
@@ -95,7 +110,7 @@ public class Controller {
 	@PostMapping("/activateAccount")
 	public ResponseEntity<Map<String, Object>> activateUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-		String loggedInUserEmail = userService.getUserEmailFromSession();
+		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
         if(loggedInUserEmail.equalsIgnoreCase("admin@gmail.com")){
 			response.put("message", userService.activateAccount(email));
         	response.put("status", HttpStatus.OK.value());
@@ -122,14 +137,15 @@ public class Controller {
 		return ResponseEntity.ok(teacher);
 	}
 	
+	
 	@GetMapping("/getAllTeachers")
 	public ResponseEntity<?> findAllteachers(){
-//		System.out.println(userService.getUserEmailFromSession());
-		if(userService.getUserEmailFromSession().equals("admin@gmail.com")) {
+//		System.out.println("------>"+userService.getUserEmailFromSession(httpSession));
+//		if(userService.getUserEmailFromSession(httpSession).equals("admin@gmail.com")) {
 			return ResponseEntity.ok(teacherService.getAllTeachersInfo());
-		}else {
-			return ResponseEntity.ok("you are not authorised to get those information");
-		} 
+//		}else {
+//			return ResponseEntity.ok("you are not authorised to get those information");
+//		} 
 		
 		
 		
@@ -137,17 +153,17 @@ public class Controller {
 	
 	@GetMapping("/getAllStudents")
 	public ResponseEntity<?> findAllStudents(){
-		if(userService.getUserEmailFromSession().equals("admin@gmail.com")) {
+//		if(userService.getUserEmailFromSession(httpSession).equals("admin@gmail.com")) {
 			return ResponseEntity.ok(studentService.getAllStudentsInfo());
-		}else {
-			return ResponseEntity.ok("you are not authorised to get those information");
-		} 	
+//		}else {
+//			return ResponseEntity.ok("you are not authorised to get those information");
+//		} 	
 		
 	}
 	
 	@GetMapping("/getTeacherWiseAllStudents")
 	public ResponseEntity<?> findTeacherWiseAllStudents(@RequestParam("teacherEmail") String teacherEmail){
-		String loggedInUserEmail = userService.getUserEmailFromSession();
+		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
 		if(loggedInUserEmail.equals(teacherEmail)) {
 			return ResponseEntity.ok(teacherService.getTeacherWiseStudentList(teacherEmail));
 		}else {
@@ -158,7 +174,8 @@ public class Controller {
 	@PatchMapping("/removeStudentFromTeacher")
 	public ResponseEntity<?> deleteStudentFromTeacher(@RequestParam("studentEmail") String studentEmail,
 			@RequestParam("teacherEmail") String teacherEmail){
-		String loggedInUserEmail = userService.getUserEmailFromSession();
+		
+		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
 		if(loggedInUserEmail.equals(teacherEmail)) {
 			studentService.removeAdvisor(studentEmail);
 			requestService.cancelRequest(studentEmail);

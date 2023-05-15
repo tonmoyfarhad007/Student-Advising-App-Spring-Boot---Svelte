@@ -1,7 +1,8 @@
 import Login from './login/login.svelte';
+import Admin from './admin/admin.svelte';
 // import Landing from './landing/landingPage.svelte';
 import Register from './register/register.svelte';
-// import UserDetails from './userdetails/userdetails.svelte';
+import Student from './student/student.svelte';
 // import Contact from './contact/contact.svelte';
 
 
@@ -11,7 +12,7 @@ export default {
 	// '/': Landing,
     '/login': Login,
     '/register':Register,
-    // '/userDetails': UserDetails,
-    // '/contact': Contact
+    '/admin': Admin,
+    '/student': Student
 	
 }

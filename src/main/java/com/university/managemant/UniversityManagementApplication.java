@@ -33,7 +33,7 @@ public class UniversityManagementApplication {
 			user.setUserType("Admin");
 			user.setActive(true);
 			userDetailsService.createUserAccount(user);
-			adminService.saveAdminProfile("Admin User", user.getEmail(), user.getPassword());
+			adminService.saveAdminProfile("Admin User", user.getEmail(), "+8801XXXXXXXXX");
 		}
 		
 		

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.university.managemant.model.User;
 import com.university.managemant.repository.StudentRepository;
+import com.university.managemant.repository.TeacherRepository;
 import com.university.managemant.repository.UserRepository;
 import com.university.managemant.requestRespondseHandler.UserDto;
 
@@ -37,8 +38,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 	@Autowired
 	private StudentService studentService;
 	
-	@Autowired
-	private HttpSession httpSession;
+//	@Autowired
+//	private HttpSession httpSession;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -81,7 +82,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	
-	public boolean checkLoginCredential(String email, String password) {
+	public boolean checkLoginCredential(String email, String password,HttpSession httpSession) {
 		
 		try {
 			User user = userRepository.findByEmail(email);
@@ -104,7 +105,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	
-	public String getUserEmailFromSession() {
+	public String getUserEmailFromSession(HttpSession httpSession) {
 		return (String) httpSession.getAttribute("email");
 	}
 	
@@ -115,6 +116,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 		if(user!=null) {
 			user.setActive(false);
 			userRepository.saveAndFlush(user);
+			if(user.getUserType().equals("Teacher")) {
+				teacherService.deactiveTeacher(email);
+			}else if(user.getUserType().equals("Student")) {
+				studentService.deactiveTeacher(email);
+			}
 			return true;
 		}else {
 			return false;
