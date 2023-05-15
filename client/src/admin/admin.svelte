@@ -1,9 +1,14 @@
 <script>
-    import {adminData , isLoggedIn, teacherData, studentData} from '../store/adminStore.js';
+    import { isStudentLoggedIn } from '../store/studentStore.js';
+    import {adminData , isAdminLoggedIn, teacherData, studentData, dataFromSession} from '../store/adminStore.js';
     let dataList = [1,2,3];
 
     function logOut(){
-        isLoggedIn.set(false);
+        sessionStorage.removeItem('jwtToken');
+        sessionStorage.removeItem('name');
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('phoneNo');
+        isAdminLoggedIn.set(false);
         window.location.href = "#/login";
     }
 
@@ -21,9 +26,14 @@
     function deactivateUser(email){
 
     }
+
+    if(!$isAdminLoggedIn && sessionStorage.getItem('userType')=="Admin"){
+        dataFromSession.setSessionDatatoStore();
+        isAdminLoggedIn.set(true);
+    }
 </script>
 
-{#if $isLoggedIn}
+{#if $isAdminLoggedIn}
 <div class="flex w-full justify-between border">
     <div class="mt-20 w-full p-7">
         <div class="flex items-center justify-center">

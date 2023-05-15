@@ -151,6 +151,7 @@ public class Controller {
 		
 	}
 	
+	
 	@GetMapping("/getAllStudents")
 	public ResponseEntity<?> findAllStudents(){
 //		if(userService.getUserEmailFromSession(httpSession).equals("admin@gmail.com")) {
@@ -184,7 +185,6 @@ public class Controller {
 			return ResponseEntity.ok("you cannot delete other theacher's student");
 		}
 	}
-	
 	
 	
 	

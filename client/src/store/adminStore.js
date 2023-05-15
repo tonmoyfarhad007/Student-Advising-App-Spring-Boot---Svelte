@@ -25,6 +25,39 @@ function storeAdminData(){
 }
 
 
+function getDataFromSession(){
+    
+    const { subscribe, set, update } = writable("");
+
+    return {
+        subscribe,
+        set: (val) => {set(val);},
+
+        print: (msg) => {console.log(msg)},
+
+        setSessionDatatoStore: ()=>{
+            let name = sessionStorage.getItem('name');
+            let email = sessionStorage.getItem('email');
+            let phoneNo = sessionStorage.getItem('phoneNo');
+
+            let data = {
+                name: name,
+                email: email,
+                phoneNo: phoneNo
+            }
+            adminData.store(data);
+
+        }
+
+        
+
+            
+        
+    }
+}
+
+
+
 
 function storeTeacherData(){
     
@@ -123,8 +156,7 @@ function storeStudentData(){
             const data = await response.json();
             console.log(data);
             studentData.set(data);
-
-            
+    
         }
 
             
@@ -133,8 +165,9 @@ function storeStudentData(){
 }
 
 export const teacherData      = storeTeacherData();
+export const dataFromSession  = getDataFromSession();
 export const studentData      = storeStudentData();
 export const adminData        = storeAdminData();
-export let isLoggedIn         = writable(false);
+export let   isAdminLoggedIn  = writable(false);
 export const loggedInUser     = writable("");
 export const loggedInUserPass = writable("");

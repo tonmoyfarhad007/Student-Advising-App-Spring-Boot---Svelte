@@ -1,7 +1,7 @@
 <script>
 
-    import {adminData, isLoggedIn, loggedInUserPass, loggedInUser} from '../store/adminStore.js';
-    import { studentProfileData } from '../store/studentStore.js';
+    import {adminData, isAdminLoggedIn, loggedInUserPass, loggedInUser} from '../store/adminStore.js';
+    import { studentProfileData, isStudentLoggedIn } from '../store/studentStore.js';
 
     async function onSubmit(e) {
         const formData = new FormData(e.target);
@@ -12,6 +12,8 @@
         }
         loggedInUser.set(plainObject["email"]);
         loggedInUserPass.set(plainObject["password"]);
+
+        // localStorage.setItem('email', plainObject["email"]);
 
         const jsonData = JSON.stringify(plainObject);
         
@@ -25,6 +27,8 @@
         });
         const jwtTokenData = await jwtResponse.json();
         jwtToken = jwtTokenData['token'];
+        sessionStorage.setItem("jwtToken",jwtToken);
+
 
         let response = await fetch('http://localhost:8080/login', {
             method: 'POST',
@@ -36,12 +40,28 @@
         });
 
         const data = await response.json();
-        // console.log(data);
-        isLoggedIn.set(true);
+        console.log(data);
+        
+        sessionStorage.setItem('userType', data["userType"]);
+        
+
         if(data['userType']=="Admin") {
+            isAdminLoggedIn.set(true);
+            isStudentLoggedIn.set(false);
+            sessionStorage.setItem('name', data["userDetails"].name);
+            sessionStorage.setItem('email', data["userDetails"].email);
+            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
             adminData.store(data['userDetails']);
             window.location.href = "#/admin";
         }else if(data['userType']=="Student"){
+            isStudentLoggedIn.set(true);
+            isAdminLoggedIn.set(false);
+            sessionStorage.setItem('name', data["userDetails"].name);
+            sessionStorage.setItem('email', data["userDetails"].email);
+            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
+            sessionStorage.setItem('studentId', data["userDetails"].studentId);
+            sessionStorage.setItem('active', data["userDetails"].active);
+            sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
             studentProfileData.setStudentData(data['userDetails']);
             window.location.href = "#/student";
         }
