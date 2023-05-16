@@ -59,6 +59,12 @@ public class StudentService {
 		studentRepository.save(student);
 		
 	}
+	public void activateStudent(String email) {
+		Student student = studentRepository.findByEmail(email);
+		student.setActive(true);
+		studentRepository.save(student);
+		
+	}
 	
 	public Student updateStudent(String email, String name, String phoneNo, String departmentName) {
 		Student student = studentRepository.findByEmail(email);

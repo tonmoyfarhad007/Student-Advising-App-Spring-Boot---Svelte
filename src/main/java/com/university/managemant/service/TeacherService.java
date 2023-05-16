@@ -62,6 +62,11 @@ public class TeacherService {
 		teacherRepository.save(teacher);
 	}
 	
+	public void activateTeacher(String email) {
+		Teacher teacher =teacherRepository.findByEmail(email);
+		teacher.setActive(true);
+		teacherRepository.save(teacher);
+	}
 	
 	public Teacher updateTeacher(String email, String name, String phoneNo, String departmentName) {
 		Teacher teacher = teacherRepository.findByEmail(email);

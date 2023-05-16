@@ -82,20 +82,30 @@ public class JwtUserDetailsService implements UserDetailsService {
 	}
 	
 	
-	public boolean checkLoginCredential(String email, String password,HttpSession httpSession) {
+	public boolean checkLoginCredential(String email, String password) {
 		
 		try {
 			User user = userRepository.findByEmail(email);
 			userType = user.getUserType();
 			
 			if(passwordEncoder.matches(password, user.getPassword()) && user.isActive()) {
-				httpSession.setAttribute("email", email);
 				return true;
 			}else {
 				return false;
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean resetPassword(String email, String newPass,String oldPass) {
+		if(checkLoginCredential(email,oldPass)) {
+			User user = userRepository.findByEmail(email);
+			user.setPassword(bcryptEncoder.encode(newPass));
+			userRepository.save(user);
+			return true;
+		}else {
 			return false;
 		}
 	}
@@ -133,6 +143,11 @@ public class JwtUserDetailsService implements UserDetailsService {
 		if(user!=null) {
 			user.setActive(true);
 			userRepository.saveAndFlush(user);
+			if(user.getUserType().equals("Teacher")) {
+				teacherService.activateTeacher(email);
+			}else if(user.getUserType().equals("Student")) {
+				studentService.activateStudent(email);
+			}
 			return true;
 		}else {
 			return false;

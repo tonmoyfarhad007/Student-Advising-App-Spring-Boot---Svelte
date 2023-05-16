@@ -70,28 +70,7 @@ function storeTeacherData(){
         print: (msg) => {console.log(msg)},
 
         fetchAllTeacher: async ()=>{
-            // debugger;
-            let jwtToken;
-            let email, pass;
-            loggedInUser.subscribe(value => {email = value});
-            loggedInUserPass.subscribe(value => {pass = value});
-            let plainObject = {
-                email: email,
-                password: pass
-            };
-            let jsonData = JSON.stringify(plainObject);
-
-            let jwtResponse = await fetch('http://localhost:8080/authenticate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '
-            },
-            body: jsonData
-            });
-            const jwtTokenData = await jwtResponse.json();
-            jwtToken = jwtTokenData['token'];
-            
+            const jwtToken = sessionStorage.getItem('jwtToken');
 
             let response = await fetch("http://localhost:8080/getAllTeachers", {
                 method: 'GET',
@@ -112,6 +91,53 @@ function storeTeacherData(){
     }
 }
 
+function avtiveDeactive(){
+    
+    const { subscribe, set, update } = writable("");
+
+    return {
+        subscribe,
+        set: (val) => {set(val);},
+
+        print: (msg) => {console.log(msg)},
+
+        deactiveUser: async (email)=>{
+            const jwtToken = sessionStorage.getItem('jwtToken');
+            let url = "http://localhost:8080/deactiveAccount?email="+email;
+            let response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`
+                } 
+            });
+
+            const data = await response.json();
+            console.log(data);
+            // teacherData.set(data); activateAccount
+
+            
+        },
+        activateUser: async (email)=>{
+            const jwtToken = sessionStorage.getItem('jwtToken');
+            let url = "http://localhost:8080/activateAccount?email="+email;
+            let response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`
+                } 
+            });
+
+            const data = await response.json();
+            console.log(data);
+            // teacherData.set(data); activateAccount
+
+            
+        }        
+    }
+}
+
+
+
 function storeStudentData(){
     
     const { subscribe, set, update } = writable("");
@@ -123,29 +149,8 @@ function storeStudentData(){
         print: (msg) => {console.log(msg)},
 
         fetchAllStudents: async ()=>{
-            // debugger;
-            let jwtToken;
-            let email, pass;
-            loggedInUser.subscribe(value => {email = value});
-            loggedInUserPass.subscribe(value => {pass = value});
-            let plainObject = {
-                email: email,
-                password: pass
-            };
-            let jsonData = JSON.stringify(plainObject);
-
-            let jwtResponse = await fetch('http://localhost:8080/authenticate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '
-            },
-            body: jsonData
-            });
-            const jwtTokenData = await jwtResponse.json();
-            jwtToken = jwtTokenData['token'];
-            
-
+            debugger;
+            const jwtToken = sessionStorage.getItem('jwtToken');
             let response = await fetch("http://localhost:8080/getAllStudents", {
                 method: 'GET',
                 headers: {
@@ -164,6 +169,7 @@ function storeStudentData(){
     }
 }
 
+export const activity         = avtiveDeactive();
 export const teacherData      = storeTeacherData();
 export const dataFromSession  = getDataFromSession();
 export const studentData      = storeStudentData();

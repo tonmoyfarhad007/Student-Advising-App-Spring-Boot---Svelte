@@ -1,10 +1,12 @@
 <script>
     import { teacherData } from '../store/adminStore.js';
-    import { studentProfileData, isStudentLoggedIn, studentDataFromSession, showUpdateComponent } from '../store/studentStore.js';
+    import { studentProfileData, isStudentLoggedIn, studentDataFromSession, showUpdateComponent, showResetComponent } from '../store/studentStore.js';
     import UpdateComponent from '../components/update.svelte';
+    import ResetCompnent from '../components/resetCompnent.svelte';
     
     teacherData.fetchAllTeacher();
     function logOut(){
+        sessionStorage.removeItem('userType');
         sessionStorage.removeItem('jwtToken');
         sessionStorage.removeItem('name');
         sessionStorage.removeItem('email');
@@ -19,6 +21,7 @@
     // let showUpdateComponent = false;
 
     function showUpdate(){
+        showResetComponent.set(false);
         if($showUpdateComponent==false){
             showUpdateComponent.set(true);
         }else {
@@ -27,15 +30,26 @@
         
     }
 
+    function showReset(){
+        showUpdateComponent.set(false);
+        if($showResetComponent==false){
+            showResetComponent.set(true); 
+        }else{
+            showResetComponent.set(false);
+        }
+    }
+
 
     async function onSubmit() {  
         let selectedTeacherEmail = document.querySelector('input[name="selectedTeacher"]:checked').value;
         console.log('Selected Teacher:', selectedTeacherEmail);
         let studentEmail = sessionStorage.getItem('email');
+        let studentName  = sessionStorage.getItem('name');
 
         let plainObject = {
             studentEmail: studentEmail,
-            teacherEmail: selectedTeacherEmail
+            teacherEmail: selectedTeacherEmail,
+            studentName: studentName
         };
         const jwtToken = sessionStorage.getItem('jwtToken');
         const jsonData = JSON.stringify(plainObject);
@@ -50,7 +64,13 @@
         });
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
+
+        if(data["success"]){
+            alert("Successfully request sent!!");
+        }else{
+            alert("Failed request sent!!");
+        }
 
 
     }
@@ -110,12 +130,17 @@
 
 <div class="p-7">
     <button class="p-2 bg-blue-400 rounded-md" on:click={()=>showUpdate()}>Update</button>
+    <button class="p-2 bg-blue-400 rounded-md ml-5" on:click={()=>showReset()}>Reset Password</button>
 </div>
 
 {#if $showUpdateComponent}
 <UpdateComponent name={$studentProfileData.name}... email={$studentProfileData.email}
  phoneNo={$studentProfileData.phoneNo}... departmentName={$studentProfileData.departmentName}... userType="Student"></UpdateComponent>
     
+{/if}
+
+{#if $showResetComponent}
+<ResetCompnent/>
 {/if}
 
 <div class="p-7">

@@ -55,3 +55,4 @@ export const studentProfileData = storeStudentData();
 export const studentDataFromSession = getStudentDataFromSession();
 export let isStudentLoggedIn    = writable(false );
 export let showUpdateComponent  = writable(false);
+export let showResetComponent   = writable(false);

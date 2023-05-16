@@ -1,9 +1,9 @@
 <script>
     import { isStudentLoggedIn } from '../store/studentStore.js';
-    import {adminData , isAdminLoggedIn, teacherData, studentData, dataFromSession} from '../store/adminStore.js';
-    let dataList = [1,2,3];
-
+    import { activity, adminData , isAdminLoggedIn, teacherData, studentData, dataFromSession} from '../store/adminStore.js';
+    let teststudentData = studentData;
     function logOut(){
+        sessionStorage.removeItem('userType');
         sessionStorage.removeItem('jwtToken');
         sessionStorage.removeItem('name');
         sessionStorage.removeItem('email');
@@ -24,7 +24,26 @@
         
     }
     function deactivateUser(email){
-
+        activity.deactiveUser(email);
+        if(listLable==="Student List"){
+            teststudentData.fetchAllStudents()
+            // studentData.fetchAllStudents();
+        }else if(listLable==="Teacher List"){
+            teacherData.fetchAllTeacher();
+        }
+        
+        
+    }
+    function activateUser(email){
+        activity.activateUser(email);
+        if(listLable==="Student List"){
+            teststudentData.fetchAllStudents()
+            // studentData.fetchAllStudents();
+        }else if(listLable==="Teacher List"){
+            teacherData.fetchAllTeacher();
+        }
+        
+        
     }
 
     if(!$isAdminLoggedIn && sessionStorage.getItem('userType')=="Admin"){
@@ -86,19 +105,28 @@
         <div class="w-80 border">{item.email}</div>
         <div class="w-80 border">{item.departmentName}</div>
         <div class="w-80 border">
-            <button class="p-2 bg-red-400 rounded-md"> Deactive</button>
-        </div>
+            {#if item.active}
+            <button class="p-2 bg-red-400 rounded-md" on:click={()=>deactivateUser(item.email)} > Deactive</button>
+            {:else}
+            <button class="p-2 bg-green-400 rounded-md" on:click={()=>activateUser(item.email)} > Active</button>
         
+            {/if}
+        </div>      
     </div>     
     {/each}
     {:else if listLable=="Student List"}
-    {#each $studentData as item,i}
+    {#each $teststudentData as item}
     <div class="flex border">
         <div class="w-80 border">{item.name}</div>
         <div class="w-80 border">{item.email}</div>
         <div class="w-80 border">{item.departmentName}</div>
         <div class="w-80 border">
-            <button class="p-2 bg-red-400 rounded-md" on:click={()=>deactivateUser(item.email)}> Deactive</button>
+            {#if item.active}
+            <button class="p-2 bg-red-400 rounded-md" on:click={()=>deactivateUser(item.email)} > Deactive</button>
+            {:else}
+            <button class="p-2 bg-green-400 rounded-md" on:click={()=>activateUser(item.email)} > Active</button>
+        
+            {/if}
         </div>
         
     </div>     

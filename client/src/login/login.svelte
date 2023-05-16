@@ -41,48 +41,51 @@
         });
 
         const data = await response.json();
-        console.log(data);
-        
-        sessionStorage.setItem('userType', data["userType"]);
-        
+        console.log("login Data---->",data);
+        if(data["userDetails"]!=="Not authorised"){
+            sessionStorage.setItem('userType', data["userType"]);
+            if(data['userType']=="Admin") {
+                isAdminLoggedIn.set(true);
+                isStudentLoggedIn.set(false);
+                isTeacherLoggedIn.set(false);
+                sessionStorage.setItem('name', data["userDetails"].name);
+                sessionStorage.setItem('email', data["userDetails"].email);
+                sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
+                adminData.store(data['userDetails']);
+                window.location.href = "#/admin";
+            }else if(data['userType']=="Student"){
+                isStudentLoggedIn.set(true);
+                isAdminLoggedIn.set(false);
+                isTeacherLoggedIn.set(false);
+                sessionStorage.setItem('name', data["userDetails"].name);
+                sessionStorage.setItem('email', data["userDetails"].email);
+                sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
+                sessionStorage.setItem('studentId', data["userDetails"].studentId);
+                sessionStorage.setItem('active', data["userDetails"].active);
+                sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
+                studentProfileData.setStudentData(data['userDetails']);
+                window.location.href = "#/student";
+            }else if(data['userType']=="Teacher"){
+                isTeacherLoggedIn.set(true);
+                isStudentLoggedIn.set(false);
+                isAdminLoggedIn.set(false);
+                sessionStorage.setItem('name', data["userDetails"].name);
+                sessionStorage.setItem('email', data["userDetails"].email);
+                sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
+                sessionStorage.setItem('teacherId', data["userDetails"].teacherId);
+                sessionStorage.setItem('active', data["userDetails"].active);
+                sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
+                singleTeacherData.setSingleTeacherData(data['userDetails']);
+                window.location.href = "#/teacher";
+            }else{
+                alert("Somthing wrong with registration please try again");
+            }
 
-        if(data['userType']=="Admin") {
-            isAdminLoggedIn.set(true);
-            isStudentLoggedIn.set(false);
-            isTeacherLoggedIn.set(false);
-            sessionStorage.setItem('name', data["userDetails"].name);
-            sessionStorage.setItem('email', data["userDetails"].email);
-            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
-            adminData.store(data['userDetails']);
-            window.location.href = "#/admin";
-        }else if(data['userType']=="Student"){
-            isStudentLoggedIn.set(true);
-            isAdminLoggedIn.set(false);
-            isTeacherLoggedIn.set(false);
-            sessionStorage.setItem('name', data["userDetails"].name);
-            sessionStorage.setItem('email', data["userDetails"].email);
-            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
-            sessionStorage.setItem('studentId', data["userDetails"].studentId);
-            sessionStorage.setItem('active', data["userDetails"].active);
-            sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
-            studentProfileData.setStudentData(data['userDetails']);
-            window.location.href = "#/student";
-        }else if(data['userType']=="Teacher"){
-            isTeacherLoggedIn.set(true);
-            isStudentLoggedIn.set(false);
-            isAdminLoggedIn.set(false);
-            sessionStorage.setItem('name', data["userDetails"].name);
-            sessionStorage.setItem('email', data["userDetails"].email);
-            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
-            sessionStorage.setItem('teacherId', data["userDetails"].teacherId);
-            sessionStorage.setItem('active', data["userDetails"].active);
-            sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
-            singleTeacherData.setSingleTeacherData(data['userDetails']);
-            window.location.href = "#/teacher";
         }else{
-            alert("Somthing wrong with registration please try again");
+            alert(data["userDetails"]);
         }
-
+        
+        
         
     }
 

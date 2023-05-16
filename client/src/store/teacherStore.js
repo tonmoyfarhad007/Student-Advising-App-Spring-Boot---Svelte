@@ -18,6 +18,74 @@ function storeTeacherData(){
     }
 }
 
+function teacherWiseStudentData(){
+    
+    const { subscribe, set, update } = writable("");
+
+    return {
+        subscribe,
+        set: (val) => {set(val);},
+
+        print: (msg) => {console.log(msg)},
+
+        getTeacherWiseStudentData: async (email)=>{
+            console.log(email);
+            const jwtToken = sessionStorage.getItem('jwtToken');
+            let url ='http://localhost:8080/getTeacherWiseAllStudents?teacherEmail='+email;
+
+            let response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+            set(data);
+            
+        } 
+
+        
+    }
+}
+
+function advisingRequestData(){
+    
+    const { subscribe, set, update } = writable("");
+
+    return {
+        subscribe,
+        set: (val) => {set(val);},
+
+        print: (msg) => {console.log(msg)},
+
+        getRequestData: async (email)=>{
+            console.log(email);
+            const jwtToken = sessionStorage.getItem('jwtToken');
+            let url ='http://localhost:8080/getTeacerWiseRequestList?teacherEmail='+email;
+
+            let response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                },
+            });
+            const data = await response.json();
+            console.log(data);
+            let arr = [];
+            data.forEach(e => {
+                if(e.status=="pending"){
+                    arr.push(e);
+                }
+            });
+            set(arr);
+            
+        } 
+           
+        
+    }
+}
+
 
 function getTeacherDataFromSession() {
     
@@ -52,6 +120,8 @@ function getTeacherDataFromSession() {
 }
 
 
-export const singleTeacherData = storeTeacherData();
+export const singleTeacherData      = storeTeacherData();
+export const requestList            = advisingRequestData();
 export const teacherDataFromSession = getTeacherDataFromSession();
+export const teacherWiseStudentList = teacherWiseStudentData();
 export let isTeacherLoggedIn   = writable(false);

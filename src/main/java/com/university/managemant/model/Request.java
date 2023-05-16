@@ -20,9 +20,23 @@ public class Request {
 	
 	private String teacherEmail;
 	
+	private String studentName;
+	
 	private String status;
 	
 	public Request() {}
+	
+	
+	
+
+	public String getStudentName() {
+		return studentName;
+	}
+
+	public void setStudentName(String studentName) {
+		this.studentName = studentName;
+	}
+
 
 	public long getRequestId() {
 		return requestId;

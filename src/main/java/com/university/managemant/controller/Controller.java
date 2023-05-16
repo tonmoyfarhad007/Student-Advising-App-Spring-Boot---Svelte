@@ -62,7 +62,7 @@ public class Controller {
 	public ResponseEntity<?> login(@RequestBody JwtRequest authenticationRequest) {
 		String email = authenticationRequest.getEmail();
 		String password = authenticationRequest.getPassword();
-		boolean check = userService.checkLoginCredential(email, password,httpSession);
+		boolean check = userService.checkLoginCredential(email, password);
 		String userType = userService.getUserType();
 		Map<String, Object> response = new HashMap<>();
 		response.put("userType", userType);
@@ -90,101 +90,83 @@ public class Controller {
 	@PostMapping("/deactiveAccount")
 	public ResponseEntity<Map<String, Object>> deactiveUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
-        if(email.equals("admin@gmail.com")) {
-        	response.put("message", "admin cannot be deactivated");
-        	response.put("status", HttpStatus.FORBIDDEN.value());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-		}else if(loggedInUserEmail.equalsIgnoreCase("admin@gmail.com")){
-			response.put("message", userService.deactiveAccount(email));
-        	response.put("status", HttpStatus.OK.value());
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		}else {
-			response.put("message", "you dont have the permission to deactivate!!");
-        	response.put("status", HttpStatus.FORBIDDEN.value());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-			
-		}
+		response.put("message", userService.deactiveAccount(email));
+    	return ResponseEntity.status(HttpStatus.OK).body(response);
+
 	}
 	
 	
 	@PostMapping("/activateAccount")
 	public ResponseEntity<Map<String, Object>> activateUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
-        if(loggedInUserEmail.equalsIgnoreCase("admin@gmail.com")){
 			response.put("message", userService.activateAccount(email));
-        	response.put("status", HttpStatus.OK.value());
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		}else {
-			response.put("message", "you dont have the permission to activate!!");
-        	response.put("status", HttpStatus.FORBIDDEN.value());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-		}
+        	return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
 	@PostMapping("/requestForAdvisor")
-	public ResponseEntity<?> advisorRequest(@RequestBody RequestDto request){
-		return ResponseEntity.ok(requestService.addRequest(request.getStudentEmail(), request.getTeacherEmail(), "pending"));
+	public ResponseEntity<Map<String, Object>> advisorRequest(@RequestBody RequestDto request){
+		Request fetchedRequest = requestService.addRequest(request.getStudentEmail(), request.getTeacherEmail(),request.getStudentName(), "pending");
+		Map<String, Object> response = new HashMap<>();
+		if(fetchedRequest!=null) {
+			response.put("success", true);
+		}else {
+			response.put("success", false);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
 	
 	@PostMapping("/approveRequest")
-	public ResponseEntity<?> approveAdvisorRequest(@RequestParam("studentEmail") String studentEmail){
+	public ResponseEntity<Map<String, Object>> approveAdvisorRequest(@RequestParam("studentEmail") String studentEmail){
 		Student student = studentService.getOneStudentsInfo(studentEmail);
 		Request request = requestService.approveRequest(studentEmail);
 		Teacher teacher = teacherService.addApprovedStudentInfoToTeacher(request.getTeacherEmail(), student);
-		
-		return ResponseEntity.ok(teacher);
+		Map<String, Object> response = new HashMap<>();
+		if(teacher!=null) {
+			response.put("success", true);
+		}else {
+			response.put("success", false);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	
+	@GetMapping("/getTeacerWiseRequestList")
+	public ResponseEntity<?> getTeacherWiseRequest(@RequestParam("teacherEmail") String teacherEmail){
+		return ResponseEntity.ok(requestService.getTeacherBasedRequests(teacherEmail));
 	}
 	
 	
 	@GetMapping("/getAllTeachers")
 	public ResponseEntity<?> findAllteachers(){
-//		System.out.println("------>"+userService.getUserEmailFromSession(httpSession));
-//		if(userService.getUserEmailFromSession(httpSession).equals("admin@gmail.com")) {
-			return ResponseEntity.ok(teacherService.getAllTeachersInfo());
-//		}else {
-//			return ResponseEntity.ok("you are not authorised to get those information");
-//		} 
-		
-		
-		
+		return ResponseEntity.ok(teacherService.getAllTeachersInfo());	
 	}
 	
 	
 	@GetMapping("/getAllStudents")
 	public ResponseEntity<?> findAllStudents(){
-//		if(userService.getUserEmailFromSession(httpSession).equals("admin@gmail.com")) {
-			return ResponseEntity.ok(studentService.getAllStudentsInfo());
-//		}else {
-//			return ResponseEntity.ok("you are not authorised to get those information");
-//		} 	
-		
+		return ResponseEntity.ok(studentService.getAllStudentsInfo());
 	}
 	
 	@GetMapping("/getTeacherWiseAllStudents")
 	public ResponseEntity<?> findTeacherWiseAllStudents(@RequestParam("teacherEmail") String teacherEmail){
-		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
-		if(loggedInUserEmail.equals(teacherEmail)) {
 			return ResponseEntity.ok(teacherService.getTeacherWiseStudentList(teacherEmail));
-		}else {
-			return ResponseEntity.ok("you cannot get others student list");
-		}
 	}
 	
 	@PatchMapping("/removeStudentFromTeacher")
-	public ResponseEntity<?> deleteStudentFromTeacher(@RequestParam("studentEmail") String studentEmail,
+	public ResponseEntity<Map<String, Object>> deleteStudentFromTeacher(@RequestParam("studentEmail") String studentEmail,
 			@RequestParam("teacherEmail") String teacherEmail){
+		Map<String, Object> response = new HashMap<>();
 		
-		String loggedInUserEmail = userService.getUserEmailFromSession(httpSession);
-		if(loggedInUserEmail.equals(teacherEmail)) {
-			studentService.removeAdvisor(studentEmail);
-			requestService.cancelRequest(studentEmail);
-			return ResponseEntity.ok(teacherService.getSingleTeachersInfo(teacherEmail));
+		studentService.removeAdvisor(studentEmail);
+		requestService.cancelRequest(studentEmail);
+		Teacher teacher = teacherService.getSingleTeachersInfo(teacherEmail);
+		if(teacher!=null) {
+			response.put("success", true);
 		}else {
-			return ResponseEntity.ok("you cannot delete other theacher's student");
+			response.put("success", false);
 		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
 	@PatchMapping("/update")
@@ -198,6 +180,17 @@ public class Controller {
 			return ResponseEntity.ok("cannot update");
 		}
 	}
+	
+	@PatchMapping("/resetPassword")
+	public ResponseEntity<Map<String, Object>> resetPassword(@RequestParam("email") String email, 
+			@RequestParam("newPass") String newPass, @RequestParam("oldPass") String oldPass) {
+		
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", userService.resetPassword(email, newPass, oldPass));
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+		
+	}
+	
 	
 	
 	
