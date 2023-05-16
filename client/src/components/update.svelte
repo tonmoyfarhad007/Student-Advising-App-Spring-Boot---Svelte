@@ -49,7 +49,7 @@
 
 <div class="p-6 space-y-4 md:space-y-4 sm:p-8">
 <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-    Create an account
+    Update Your Profile
 </h1>
 
 <form class="space-y-2 md:space-y-1" on:submit|preventDefault={onSubmit}>
