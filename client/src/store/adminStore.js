@@ -113,6 +113,11 @@ function avtiveDeactive(){
 
             const data = await response.json();
             console.log(data);
+            if(data["success"]){
+                alert("User activated Successfully!!")
+            }else{
+                alert("There is a problem!!!")
+            }
             // teacherData.set(data); activateAccount
 
             
@@ -129,6 +134,11 @@ function avtiveDeactive(){
 
             const data = await response.json();
             console.log(data);
+            if(data["success"]){
+                alert("User activated Successfully!!")
+            }else{
+                alert("There is a problem!!!")
+            }
             // teacherData.set(data); activateAccount
 
             

@@ -90,7 +90,7 @@ public class Controller {
 	@PostMapping("/deactiveAccount")
 	public ResponseEntity<Map<String, Object>> deactiveUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-		response.put("message", userService.deactiveAccount(email));
+		response.put("success", userService.deactiveAccount(email));
     	return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
@@ -99,7 +99,7 @@ public class Controller {
 	@PostMapping("/activateAccount")
 	public ResponseEntity<Map<String, Object>> activateUserAccount(@RequestParam("email") String email){
 		Map<String, Object> response = new HashMap<>();
-			response.put("message", userService.activateAccount(email));
+			response.put("success", userService.activateAccount(email));
         	return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	

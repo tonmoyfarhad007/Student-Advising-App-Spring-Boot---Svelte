@@ -43,7 +43,11 @@ function teacherWiseStudentData(){
             console.log(data);
             set(data);
             
-        } 
+        },
+        refesh: ()=>{
+            set([]);
+        }
+
 
         
     }

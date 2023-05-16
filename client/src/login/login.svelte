@@ -2,7 +2,7 @@
 
     import {adminData, isAdminLoggedIn, loggedInUserPass, loggedInUser} from '../store/adminStore.js';
     import { studentProfileData, isStudentLoggedIn } from '../store/studentStore.js';
-    import { isTeacherLoggedIn,singleTeacherData } from '../store/teacherStore.js';
+    import { isTeacherLoggedIn,singleTeacherData, teacherWiseStudentList } from '../store/teacherStore.js';
 
     async function onSubmit(e) {
         const formData = new FormData(e.target);
@@ -76,6 +76,7 @@
                 sessionStorage.setItem('active', data["userDetails"].active);
                 sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
                 singleTeacherData.setSingleTeacherData(data['userDetails']);
+                teacherWiseStudentList.refesh();
                 window.location.href = "#/teacher";
             }else{
                 alert("Somthing wrong with registration please try again");
