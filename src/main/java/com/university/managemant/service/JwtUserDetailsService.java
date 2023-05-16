@@ -119,7 +119,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 			if(user.getUserType().equals("Teacher")) {
 				teacherService.deactiveTeacher(email);
 			}else if(user.getUserType().equals("Student")) {
-				studentService.deactiveTeacher(email);
+				studentService.deactiveStudent(email);
 			}
 			return true;
 		}else {

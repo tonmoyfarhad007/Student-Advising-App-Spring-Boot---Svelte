@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-function storeStudentData(){
+function storeTeacherData(){
     
     const { subscribe, set, update } = writable("");
 
@@ -10,7 +10,7 @@ function storeStudentData(){
 
         print: (msg) => {console.log(msg)},
 
-        setStudentData:  (data)=>{
+        setSingleTeacherData:  (data)=>{
             console.log(data);
             set(data);
         }    
@@ -18,7 +18,8 @@ function storeStudentData(){
     }
 }
 
-function getStudentDataFromSession() {
+
+function getTeacherDataFromSession() {
     
     const { subscribe, set, update } = writable("");
 
@@ -28,11 +29,11 @@ function getStudentDataFromSession() {
 
         print: (msg) => {console.log(msg)},
 
-        setStudentDataToStoreFromSession:  ()=>{
+        setTeacherDataToStoreFromSession:  ()=>{
             let name  = sessionStorage.getItem('name');
             let email = sessionStorage.getItem('email');
             let phoneNo = sessionStorage.getItem('phoneNo');
-            let studentId = sessionStorage.getItem('studentId');
+            let teacherId = sessionStorage.getItem('teacherId');
             let active = sessionStorage.getItem('active');
             let departmentName = sessionStorage.getItem('departmentName');
             
@@ -40,18 +41,17 @@ function getStudentDataFromSession() {
                 name: name,
                 email: email,
                 phoneNo: phoneNo,
-                studentId: studentId,
+                teacherId: teacherId,
                 active: active,
                 departmentName: departmentName
             }
-            studentProfileData.setStudentData(jsonData);
+            singleTeacherData.setSingleTeacherData(jsonData);
         }    
         
     }
 }
 
 
-export const studentProfileData = storeStudentData();
-export const studentDataFromSession = getStudentDataFromSession();
-export let isStudentLoggedIn    = writable(false );
-export let showUpdateComponent  = writable(false);
+export const singleTeacherData = storeTeacherData();
+export const teacherDataFromSession = getTeacherDataFromSession();
+export let isTeacherLoggedIn   = writable(false);

@@ -1,6 +1,7 @@
 <script>
     import { teacherData } from '../store/adminStore.js';
-    import { studentProfileData, isStudentLoggedIn, studentDataFromSession } from '../store/studentStore.js';
+    import { studentProfileData, isStudentLoggedIn, studentDataFromSession, showUpdateComponent } from '../store/studentStore.js';
+    import UpdateComponent from '../components/update.svelte';
     
     teacherData.fetchAllTeacher();
     function logOut(){
@@ -13,6 +14,17 @@
         sessionStorage.removeItem('departmentName');
         isStudentLoggedIn.set(false);
         window.location.href = "#/login";
+    }
+
+    // let showUpdateComponent = false;
+
+    function showUpdate(){
+        if($showUpdateComponent==false){
+            showUpdateComponent.set(true);
+        }else {
+            showUpdateComponent.set(false);
+        }
+        
     }
 
 
@@ -97,6 +109,17 @@
 </div>
 
 <div class="p-7">
+    <button class="p-2 bg-blue-400 rounded-md" on:click={()=>showUpdate()}>Update</button>
+</div>
+
+{#if $showUpdateComponent}
+<UpdateComponent name={$studentProfileData.name}... email={$studentProfileData.email}
+ phoneNo={$studentProfileData.phoneNo}... departmentName={$studentProfileData.departmentName}... userType="Student"></UpdateComponent>
+    
+{/if}
+
+<div class="p-7">
+    <p class="bg-gray-100 w-full mb-3 font-bold"> Select Teacher and Send Request For Advising</p>
     <form id="myForm" on:submit|preventDefault={onSubmit}>
         {#each $teacherData as item}
         <input type="radio" id={item.teacherId} name="selectedTeacher" value={item.email}>

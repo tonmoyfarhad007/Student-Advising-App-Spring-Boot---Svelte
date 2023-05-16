@@ -2,6 +2,7 @@
 
     import {adminData, isAdminLoggedIn, loggedInUserPass, loggedInUser} from '../store/adminStore.js';
     import { studentProfileData, isStudentLoggedIn } from '../store/studentStore.js';
+    import { isTeacherLoggedIn,singleTeacherData } from '../store/teacherStore.js';
 
     async function onSubmit(e) {
         const formData = new FormData(e.target);
@@ -48,6 +49,7 @@
         if(data['userType']=="Admin") {
             isAdminLoggedIn.set(true);
             isStudentLoggedIn.set(false);
+            isTeacherLoggedIn.set(false);
             sessionStorage.setItem('name', data["userDetails"].name);
             sessionStorage.setItem('email', data["userDetails"].email);
             sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
@@ -56,6 +58,7 @@
         }else if(data['userType']=="Student"){
             isStudentLoggedIn.set(true);
             isAdminLoggedIn.set(false);
+            isTeacherLoggedIn.set(false);
             sessionStorage.setItem('name', data["userDetails"].name);
             sessionStorage.setItem('email', data["userDetails"].email);
             sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
@@ -64,8 +67,19 @@
             sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
             studentProfileData.setStudentData(data['userDetails']);
             window.location.href = "#/student";
-        }
-        else{
+        }else if(data['userType']=="Teacher"){
+            isTeacherLoggedIn.set(true);
+            isStudentLoggedIn.set(false);
+            isAdminLoggedIn.set(false);
+            sessionStorage.setItem('name', data["userDetails"].name);
+            sessionStorage.setItem('email', data["userDetails"].email);
+            sessionStorage.setItem('phoneNo', data["userDetails"].phoneNo);
+            sessionStorage.setItem('teacherId', data["userDetails"].teacherId);
+            sessionStorage.setItem('active', data["userDetails"].active);
+            sessionStorage.setItem('departmentName', data["userDetails"].departmentName);
+            singleTeacherData.setSingleTeacherData(data['userDetails']);
+            window.location.href = "#/teacher";
+        }else{
             alert("Somthing wrong with registration please try again");
         }
 

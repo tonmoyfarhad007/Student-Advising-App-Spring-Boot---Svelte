@@ -21,6 +21,7 @@ import com.university.managemant.model.Student;
 import com.university.managemant.model.Teacher;
 import com.university.managemant.requestRespondseHandler.JwtRequest;
 import com.university.managemant.requestRespondseHandler.RequestDto;
+import com.university.managemant.requestRespondseHandler.UpdateDto;
 import com.university.managemant.service.AdminService;
 import com.university.managemant.service.JwtUserDetailsService;
 import com.university.managemant.service.RequestService;
@@ -185,6 +186,19 @@ public class Controller {
 			return ResponseEntity.ok("you cannot delete other theacher's student");
 		}
 	}
+	
+	@PatchMapping("/update")
+	public ResponseEntity<?> updateTeacherOrStudent(@RequestBody UpdateDto updateRequest){
+		UpdateDto updateDto = updateRequest;
+		if(updateDto.getUserType().equals("Student")) {
+			return ResponseEntity.ok(studentService.updateStudent(updateDto.getEmail(), updateDto.getName(), updateDto.getPhoneNo(), updateDto.getDepartmentName()));
+		}else if(updateDto.getUserType().equals("Teacher")) {
+			return ResponseEntity.ok(teacherService.updateTeacher(updateDto.getEmail(), updateDto.getName(), updateDto.getPhoneNo(), updateDto.getDepartmentName()));
+		}else {
+			return ResponseEntity.ok("cannot update");
+		}
+	}
+	
 	
 	
 	

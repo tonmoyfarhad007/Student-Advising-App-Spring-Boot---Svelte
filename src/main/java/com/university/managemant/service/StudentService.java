@@ -53,9 +53,19 @@ public class StudentService {
 		studentRepository.save(student);
 	}
 
-	public void deactiveTeacher(String email) {
+	public void deactiveStudent(String email) {
 		Student student = studentRepository.findByEmail(email);
 		student.setActive(false);
+		studentRepository.save(student);
+		
+	}
+	
+	public Student updateStudent(String email, String name, String phoneNo, String departmentName) {
+		Student student = studentRepository.findByEmail(email);
+		student.setName(name);
+		student.setPhoneNo(phoneNo);
+		student.setDepartmentName(departmentName);
+		return studentRepository.save(student);
 		
 	}
 
